@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Room" ADD COLUMN     "game_time" INTEGER NOT NULL DEFAULT 100,
+ADD COLUMN     "winner_score" INTEGER NOT NULL DEFAULT 150;

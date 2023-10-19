@@ -1,0 +1,40 @@
+{
+  "name": "wortic-ws",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start:dev": "tsx --watch src/app.ts",
+    "start": "node build/app.js",
+    "build": "tsup src --out-dir build",
+    "test": "vitest run --dir src/use-cases",
+    "test:watch": "vitest --dir src/use-cases"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@rocketseat/eslint-config": "^2.1.0",
+    "@types/jsonwebtoken": "9.0.3",
+    "@types/node": "^20.8.6",
+    "@types/ws": "8.5.7",
+    "eslint": "^8.51.0",
+    "prisma": "5.4.2",
+    "tsup": "^7.2.0",
+    "tsx": "3.14.0",
+    "typescript": "^5.2.2",
+    "vite-tsconfig-paths": "4.2.1",
+    "vitest": "0.34.6"
+  },
+  "dependencies": {
+    "@fastify/cors": "8.4.0",
+    "@prisma/client": "5.4.2",
+    "dotenv": "^16.3.1",
+    "fastify": "4.24.2",
+    "fastify-socket.io": "5.0.0",
+    "jsonwebtoken": "9.0.2",
+    "next-auth": "4.24.3",
+    "socket.io": "4.7.2",
+    "zod": "^3.22.4"
+  }
+}

@@ -1,0 +1,13 @@
+
+
+version: '3'
+
+services:
+  wortic-pg:
+    image: 'bitnami/postgresql'
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRESQL_USERNAME=wortic
+      - POSTGRESQL_PASSWORD=wortic
+      - POSTGRESQL_DATABASE=wortic
