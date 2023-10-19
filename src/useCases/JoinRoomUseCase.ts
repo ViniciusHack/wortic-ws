@@ -1,8 +1,6 @@
-import { RoomWS } from '@/io'
+import { RoomWS } from '@/types'
 import { RoomWordsRepository } from '../repositories/RoomWordsRepository'
 import { RoomsRepository } from '../repositories/RoomsRepository'
-import { PlayerInRoomError } from './errors/PlayerInRoomError'
-import { RoomNotFoundError } from './errors/RoomNotFoundError'
 
 interface JoinRoomUseCaseParams {
   roomId: string
@@ -35,7 +33,8 @@ export class JoinRoomUseCase {
       const roomDetails = await this.roomsRepository.findById(roomId)
 
       if (!roomDetails) {
-        throw new RoomNotFoundError()
+        // throw new RoomNotFoundError()
+        return
       }
 
       room = {
@@ -51,7 +50,8 @@ export class JoinRoomUseCase {
       if (
         room.players.some((roomPlayer) => roomPlayer.email === player.email)
       ) {
-        throw new PlayerInRoomError()
+        // throw new PlayerInRoomError()
+        return
       }
       room.players.push(player)
     }

@@ -2,11 +2,11 @@ import cors from '@fastify/cors'
 import fastify from 'fastify'
 import fastifySocketIO from 'fastify-socket.io'
 import { decode } from 'next-auth/jwt'
-import { Socket } from 'socket.io'
+import { Server, Socket } from 'socket.io'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 import { RoomController } from './controllers/RoomController'
 import { env } from './env'
-import { RoomWS } from './io'
+import { RoomWS } from './types'
 
 export async function bootstrap() {
   const app = fastify()
@@ -20,9 +20,14 @@ export async function bootstrap() {
   })
   const rooms = new Map<string, RoomWS>()
 
-  const io = (app as any).io
+  const io = (app as any).io as Server<
+    DefaultEventsMap,
+    DefaultEventsMap,
+    DefaultEventsMap,
+    any
+  >
 
-  io.use(async (socket: Socket<any>, next: any) => {
+  io.use(async (socket, next) => {
     if (socket.handshake.query && socket.handshake.query.token) {
       try {
         const decoded = await decode({

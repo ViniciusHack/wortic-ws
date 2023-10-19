@@ -1,20 +1,3 @@
-// export interface IRoom {
-//   id: string;
-//   owner: IUser;
-//   name: string;
-//   image_url: string;
-//   stats: {
-//     hits: number;
-//     failures: number;
-//   }
-//   official: boolean;
-//   reset_hour: number;
-//   current_word: RoomWord;
-//   all_words: RoomWord[];
-//   created_at: string;
-//   updated_at: string;
-// }
-
 import { RoomWord } from '@prisma/client'
 
 export interface IUser {
