@@ -18,6 +18,11 @@ export async function bootstrap() {
       origin: '*',
     },
   })
+
+  app.get('/health', (req, res) => {
+    return res.send()
+  })
+
   const rooms = new Map<string, RoomWS>()
 
   const io = (app as any).io as Server<
