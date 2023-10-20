@@ -1,4 +1,4 @@
-import { RoomWS } from '@/io'
+import { RoomWS } from '@/types'
 import { Server, Socket } from 'socket.io'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 import { PrismaRoomWordsRepository } from '../repositories/prisma/PrismaRoomWordsRepository'
@@ -45,13 +45,24 @@ export class RoomController {
   }
 
   async endRound(reason: 'timeout' | 'hits') {
-    const room = this.rooms.get(this.roomId)!
+    const room = this.rooms.get(this.roomId)
+
+    if (!room) return
     clearInterval(room?.interval)
 
     this.io.to(this.roomId).emit('round_end', {
       reason,
       answer: room?.currentWord,
     })
+
+    room.players = room.players.map((player) => ({
+      ...player,
+      status: 'doing',
+    }))
+
+    this.rooms.set(this.roomId, room)
+
+    this.io.to(this.roomId).emit('room_updated', room.players)
 
     const timeout = setTimeout(() => {
       clearTimeout(timeout)
@@ -80,27 +91,29 @@ export class RoomController {
       roomsRepository,
     )
 
-    const { room } = await joinRoomUseCase.execute({
-      roomId: this.roomId,
-      rooms: this.rooms,
-      user: {
-        image: this.user.image,
-        name: this.user.name,
-        email: this.user.email,
-      },
-    })
-    this.rooms.set(this.roomId, room)
-    this.socket.join(this.roomId)
+    try {
+      const { room } = await joinRoomUseCase.execute({
+        roomId: this.roomId,
+        rooms: this.rooms,
+        user: {
+          image: this.user.image,
+          name: this.user.name,
+          email: this.user.email,
+        },
+      })
+      this.rooms.set(this.roomId, room)
+      this.socket.join(this.roomId)
 
-    if (room.currentWord.length > 0) {
-      this.io.to(this.roomId).emit('word_letters', room.currentWord.length)
-    }
+      if (room.currentWord.length > 0) {
+        this.io.to(this.roomId).emit('word_letters', room.currentWord.length)
+      }
 
-    this.io.to(this.roomId).emit('room_updated', room.players)
+      this.io.to(this.roomId).emit('room_updated', room.players)
 
-    if (room.players.length > 1 && !room.currentWord) {
-      await this.startRound()
-    }
+      if (room.players.length > 1 && !room.currentWord) {
+        await this.startRound()
+      }
+    } catch (err) {}
   }
 
   async wordAnalysis(wordSent: string) {
@@ -114,13 +127,16 @@ export class RoomController {
       })
 
     if (playerScoredIndex !== null) {
-      const room = this.rooms.get(this.roomId)!
+      const room = this.rooms.get(this.roomId)
+
+      if (!room) return
 
       room.players.splice(playerScoredIndex, 1, {
         ...room.players[playerScoredIndex],
         score:
           room.players[playerScoredIndex].score +
           Math.max(10 - room.currentHits, 1),
+        status: 'done',
       })
 
       room.currentHits += 1

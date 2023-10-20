@@ -51,7 +51,7 @@ model RoomWord {
   content String
   level   WordLevel
 
-  room   Room   @relation(fields: [roomId], references: [id])
+  room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
   roomId String
 
   @@id([content, roomId])
